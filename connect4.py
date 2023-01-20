@@ -1,14 +1,22 @@
 
-red = '\033[1;31;40m' #red
-blue = '\033[1;34;40m' #blue
-yellow = '\033[1;33;40m' #yellow
-white = '\033[1;37;40m' #white
-black = '\033[1;30;40m' #black
-board = [[blue for i in range(7)] for j in range(6)]
+# To Do List
+#-----------
 #make player class with name color and last move
 #switch player
 #player1 is red, player2 is yellow
+#make prettier board
+#add 1-player option where computer tries to win if can win in 1 move else
+#blocks a win by its opponenet else picks a random column
 
+# New Update
+# removed input errors and now checks for a tie game
+
+import os
+
+class Player:
+   def __init__(self, name, color):
+      self.name = name
+      self.color = color
 
 # Prints out the current game board to the terminal
 def print_board(board):
@@ -21,11 +29,17 @@ def print_board(board):
    print('-----------------------------')
    print('{}  1   2   3   4   5   6   7'.format(white))
 
+
+
 # Gets the next move from the player and adjusts the game board to reflect
-# that players move
+# that players move and returns the last move made
 def get_move(board, color):
    print('Make your move: ')
-   move = int(input()) - 1
+   move = input()
+   while (not(move in '1234567') or (board[0][int(move) - 1] != blue)):
+      print('That is not a valid move, try again: ')
+      move = input()
+   move = int(move) - 1
    if board[5][move] == blue:
       board[5][move] = color
       return [5, move]
@@ -45,7 +59,7 @@ def get_move(board, color):
       board[0][move] = color
       return [0, move]
    else:
-      print('ERROR TRY AGAIN')
+      print('ERROR - COLUMN FULL')
 
 # Checks if the last move made creates a connect 4
 # and returns True if so and False if not so
@@ -93,6 +107,22 @@ def check_if_winner(board, color, last_move):
             return True
    return False
 
+# Check for a tie by checking if there is not a blue column in row 0
+def check_for_tie(board):
+   for column in range(7):
+      if board[0][column] == blue:
+         return False
+   return True
+
+def computer_move(board, color):
+   new_board = board #might not work because of mutability, maybe use loop
+   # iterate through columns
+   # if column creates a win do that move
+   # if no column creates win check if column prevents loss
+   # if so do that move
+   # else do random move
+
+
 # define our colors
 red = '\033[1;31;40m' #red
 blue = '\033[1;34;40m' #blue
@@ -103,41 +133,84 @@ white = '\033[1;37;40m' #white
 # build our game board 2d list
 board = [[blue for i in range(7)] for j in range(6)]
 
+player1 = Player('Player 1', red)
+player2 = Player('Player 2', yellow)
+
 # defines our main while loop condition
 winner = False
+print_board(board)
+os.system('clear')
 print('Welcome to Terminal Connect 4')
 print()
-print_board(board)
+
+
+#To Do - adjust main loop to switch players and eliminate redunduncy
 
 # main loop
 while(not winner or play_again):
    # red player's turn
+   os.system('clear')
+   print_board(board)
    print('{}Red\'s{} turn'.format(red, white))
    last_move = get_move(board, red)
    winner = check_if_winner(board, red, last_move)
-   print_board(board)
    if winner:
+      os.system('clear')
+      print_board(board)
+      print('{}RED WINS!!!{}'.format(red, white))
       print('Want to play again? Y/N')
       response = input()
       if response.upper() == 'Y':
          winner = False
          board = [[blue for i in range(7)] for j in range(6)]
-         print_board(board)
+         continue
+      else:
+         break
+   if check_for_tie(board):
+      os.system('clear')
+      print_board(board)
+      print('Tie game')
+      print('Want to play again? Y/N')
+      response = input()
+      if response.upper() == 'Y':
+         winner = False
+         board = [[blue for i in range(7)] for j in range(6)]
       else:
          break
    # yellow player's turn
+   os.system('clear')
+   print_board(board)
    print('{}Yellow\'s{} turn'.format(yellow, white))
    last_move = get_move(board, yellow)
    winner = check_if_winner(board, yellow, last_move)
-   print_board(board)
    if winner:
+      os.system('clear')
+      print_board(board)
+      print('{}YELLOW WINS!!!{}'.format(yellow, white))
       print('Want to play again? Y/N')
       response = input()
       if response.upper() == 'Y':
          winner = False
          board = [[blue for i in range(7)] for j in range(6)]
-         print_board(board)
+      else:
+         break
+   if check_for_tie(board):
+      os.system('clear')
+      print_board(board)
+      print('Tie game')
+      print('Want to play again? Y/N')
+      response = input()
+      if response.upper() == 'Y':
+         winner = False
+         board = [[blue for i in range(7)] for j in range(6)]
       else:
          break
 
 # End of Program
+#
+#
+#             0
+#         \ 0   0 /
+#         0  \0/  0
+#         0 0 | 0 0
+#           0 | 0
